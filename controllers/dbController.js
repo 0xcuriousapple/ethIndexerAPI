@@ -38,6 +38,7 @@ async function retry(blockNumber, web3) {
 }
 
 
+// Update function for batch 
 
 async function update(item) {
 
@@ -47,6 +48,8 @@ async function update(item) {
     // Ideally this increment should be in callback of db call, but as you can see I had it there, but there is slight provlem with mongoose, it doesnt return on creation call so we have to do it here
     ucount = ucount + 2;
 
+    // I had to add settimout here, as my system was not able to handle 3 calls simultaneously.
+    // setTimeout(() => {
     usertoTx.findOneAndUpdate({ address: item.from }, { $push: { tx: item.hash } }, { upsert: true }, function (err, res) {
         if (res) {
             // ucount++;
@@ -58,7 +61,10 @@ async function update(item) {
         // }
 
     });
+    // }, 1000);
 
+
+    // setTimeout(() => {
     usertoTx.findOneAndUpdate({ address: item.to }, { $push: { tx: item.hash } }, { upsert: true }, function (err, res) {
         if (res) {
             // ucount++;
@@ -69,7 +75,9 @@ async function update(item) {
         //     console.log(`Entry for user ${item.from} created`)
         // }
     });
+    // }, 3000);
 
+    // setTimeout(() => {
     Tx.create(
         {
             txhash: item.hash,
@@ -84,14 +92,22 @@ async function update(item) {
             }
         }
     )
+    // }, 5000);
+
 
 
 }
 
+// delayed batch execute go to line no 238 to understand why 
+function delayedExecute(batch, time) {
+    setTimeout(() => {
+        batch.execute();
+    }, time);
+}
 module.exports = {
 
 
-
+    // Get tx details of user
     getDetails: async function (req, res) {
         let details = [];
         let temp = await usertoTx.findOne({ address: req.params.address }).exec()
@@ -130,6 +146,7 @@ module.exports = {
 
     },
 
+    // Ignore it ! its for testing purpose
     test: async function (req, res) {
         // console.log('asasd');
         // usertoTx.findOneAndUpdate({ address: "qqq" }, { $push: { tx: "dfg" } }, { upsert: true }, function (err, res) {
@@ -154,17 +171,22 @@ module.exports = {
         retry(21594237, web3Arr[2]);
     },
 
+    //get all TX
     getAllTx: function (req, res) {
 
         Tx.find({ temp: null }, function (error, result) {
             res.json(result);
         })
     },
+
+    // get all Users
     getAllUsers: function (req, res) {
         usertoTx.find({ temp: null }, function (error, result) {
             res.json(result);
         })
     },
+
+    // Genesis : Indexing  latest 10k blocks
     genesis: async function (req, res) {
 
         // Multiple endpoints for load balancing
@@ -187,13 +209,13 @@ module.exports = {
         // Get Latest Block Number
         const latest = await web3Arr[0].eth.getBlockNumber()
 
-        // Doing 10000 req in Batch of 10
+        // Doing 10000 req in Batch of 100
 
         let batch = new web3Arr[0].eth.BatchRequest()
         let j = 0;
 
         let k = 0;
-        for (var i = latest; i > latest - 1; i--) {
+        for (var i = latest; i > latest - 10000; i--) {
             //console.log(`request for blockno ${i} made, ${i - latest + 9999} remaining`)
             // console.log(k);
 
@@ -210,9 +232,24 @@ module.exports = {
                 })
             )
             j++;
-            if (j % 10 == 0) {
+            if (j % 100 == 0) {
                 j = 0;
-                batch.execute();
+
+                //batch.execute();
+                //Jugaad : 
+                // some updates were getting missed I think due to load, so I am trying this
+                // basically I am placing batches after sequentially incresing time
+                // Tried on 3000 mil sec
+                // results : Blocks Received : 10000 | Successful Updates : 45572 | Apprx. Expected Updates : 47745 | Total Tx : 15915 | From 21596956 to 21586957
+                // better but we want perfect
+                // going with 7000
+                // results : Blocks Received : 10000 | Successful Updates : 48146 | Apprx. Expected Updates : 48369 | Total Tx : 16123 | From 21597202 to 21587203
+                // extremly close matter of 200, but Sucessful was behind Expected from 20000 count only
+                // so, upping it with with 12000.
+                // and we chieved perfect result
+                //Blocks Received : 10000 | Successful Updates : 48255 | Apprx. Expected Updates : 48255 | Total Tx : 16085 | From 21597550 to 21587551
+                delayedExecute(batch, 12000 * k);
+
                 batch = new web3Arr[k % 3].eth.BatchRequest()
                 // console.log(k);
                 k++;
@@ -223,6 +260,7 @@ module.exports = {
 
         batch.execute()
 
+        //for console updates
         setInterval(() => {
             console.log(`Blocks Received : ${count} | Successful Updates : ${ucount} | Apprx. Expected Updates : ${ecount} | Total Tx : ${ecount / 3} | From ${latest} to ${latest - 9999}`)
         }, 10000);
