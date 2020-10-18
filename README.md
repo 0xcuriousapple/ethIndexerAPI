@@ -46,8 +46,9 @@ Performance ⬆️  <br>
 
 ##  Instructions
 
- 1. Copy paste secret.json sent over mail into the config folder (If not received ping me on abhivispute33@gmail.com)<br>
- 2. npm start<br>
+ 1. Clone the Repo and npm install
+ 2. Copy paste secret.json sent over mail into the config folder (If not received ping me on abhivispute33@gmail.com)
+ 3. npm start
  
  ### API Calls
  1. To Index 10k blocks from latest block : **localhost:3000/api/genesis**
