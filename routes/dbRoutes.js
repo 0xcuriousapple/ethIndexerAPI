@@ -8,7 +8,8 @@ router
 
 router
     .route('/update')
-    .post(dbController.updateDatabase)
+    .get(dbController.updateDatabase)
+
 
 router
     .route('/genesis')

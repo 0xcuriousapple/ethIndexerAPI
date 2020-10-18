@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const txSchema = new Schema({
 
-    txhash: {
-        from: {},
-        to: {},
-        value: {},
-        blockNumber: {},
-    }
+    txhash: {},
+    from: {},
+    to: {},
+    value: {},
+    blockNumber: {},
+
 });
 
 const Tx = mongoose.model('Tx', txSchema);

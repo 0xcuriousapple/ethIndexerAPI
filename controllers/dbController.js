@@ -2,6 +2,48 @@ const usertoTx = require('../models/usertoTx');
 const Tx = require('../models/Tx');
 const Web3 = require('web3');
 
+async function update(item) {
+
+    console.log(`Update Called for Tx ${item.hash} Block ${item.blockNumber}`);
+
+    // Updating for user from
+    var temp = await usertoTx.findOne({ address: item.from }).exec();
+    if (temp) {
+        temp.tx.push({ hash });
+        temp.save();
+    }
+    else {
+        usertoTx.create({
+            address: item.from,
+            tx: [{ hash }]
+        })
+    }
+
+    // Updating for user to
+    temp = await usertoTx.findOne({ address: item.to }).exec();
+    if (temp) {
+        temp.tx.push({ hash });
+        temp.save();
+    }
+    else {
+        usertoTx.create({
+            address: item.to,
+            tx: [{ hash }]
+        })
+    }
+
+    // Saving Tx 
+    Tx.create(
+        {
+            txhash: item.hash,
+            from: item.from,
+            to: item.to,
+            value: item.value,
+            blockNumber: item.blockNumber,
+        }
+    )
+
+}
 
 module.exports = {
 
@@ -10,6 +52,7 @@ module.exports = {
     getDetails: function (req, res) {
 
     },
+
 
     updateDatabase: function (req, res) {
 
@@ -27,21 +70,33 @@ module.exports = {
         const web3 = new Web3(provider);
 
 
-        const latest = await web3.eth.getBlockNumber()
+        web3.eth.getBlockNumber(function (error, result) {
 
-        const batch = new web3.eth.BatchRequest()
+            if (!error) {
+                const latest = result;
+                const batch = new web3.eth.BatchRequest()
+                for (var i = latest; i > latest - 2; i--) {
+                    batch.add(
+                        web3.eth.getBlock.request(i, true, (err, res) => {
+                            console.log(res)
+                            if (res) {
+                                res.transactions.forEach(update)
+                            }
+                        })
+                    )
+                }
 
-        for (var i = latest; i > latest - 2; i--) {
-            batch.add(
-                web3.eth.getBlock.request(i, true, (err, res) => { console.log(res) })
-            )
+
+                batch.execute()
+
+
+            }
         }
-
-
-        batch.execute()
-        console.log("endpoint working");
-        res.json({ 'as': "as" })
+        )
+        res.json({ 'Data Created': 'Thank You' })
     }
+
+
 };
 
 

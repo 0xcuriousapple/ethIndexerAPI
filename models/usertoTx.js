@@ -3,8 +3,7 @@ const Schema = mongoose.Schema;
 
 const usertoTxSchema = new Schema({
     address: {},
-    txhash: []
-
+    tx: []
 });
 
 const usertoTx = mongoose.model("usertoTx", usertoTxSchema);
