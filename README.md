@@ -48,7 +48,7 @@ We are not ensuring that here, all we want is the distribution of load on period
 Suppose you want to eat bowl of rice.<br>
 You dont go on and directly pour bowl in mouth, as your system is not capable to handle it.<br>
 And you dont go and put one grain one by one.<br>
-What you do is you make batches of bowl of rice (batchRequest) and take one batch one by one (delayedExecute).** <br>
+What you do is you make batches from bowl of rice (batchRequest) and take one batch one by one (delayedExecute).** <br>
 
 **Please go through [Demo](https://www.youtube.com/watch?v=CBIjbbXmeSk&feature=youtu.be) for better view** 
 
