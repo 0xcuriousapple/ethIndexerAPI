@@ -5,9 +5,10 @@ const Web3 = require('web3');
 async function update(item) {
 
     console.log(`Update Called for Tx ${item.hash} Block ${item.blockNumber}`);
+    let hash = item.hash;
 
     // Updating for user from
-    var temp = await usertoTx.findOne({ address: item.from }).exec();
+    let temp = await usertoTx.findOne({ address: item.from }).exec();
     if (temp) {
         temp.tx.push({ hash });
         temp.save();
@@ -49,7 +50,31 @@ module.exports = {
 
 
 
-    getDetails: function (req, res) {
+    getDetails: async function (req, res) {
+        let details = [];
+        let temp = await usertoTx.findOne({ address: req.params.address }).exec()
+        if (temp) {
+            let promises = [];
+            console.log(temp);
+            temp.tx.forEach(function (item) {
+                console.log(item);
+                promises.push(new Promise(function (resolve, reject) {
+                    Tx.findOne({ txhash: item.hash }, function (err, res) {
+                        details.push(res);
+                    })
+                        .then(() => {
+                            resolve();
+                        })
+                }))
+
+            })
+            Promise.all(promises).then(() => { res.json({ details }); })
+
+        }
+        else {
+            res.json({ 'Address not found': req.params.address })
+        }
+
 
     },
 
