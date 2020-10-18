@@ -5,31 +5,38 @@ Abhishek here<br>
 This is submission to [challenge](https://www.notion.so/Backend-Engineer-c3bc14e4fad04b40a486d5cbdad83093) proposed by you, the Matic team! <br>
 Basically, I had to index Kovan net for the latest 10k blocks and store that in the database and expose that DB by API.
 
-# My Approach
+### [Demo](https://www.youtube.com/watch?v=CBIjbbXmeSk&feature=youtu.be)
+# Result <br>
+## Blocks Received : 10000 | Successful Updates : 48690 | Expected Updates : 48690 | Total Tx : 16230 | From 21598219 to 21588220
+<a href="https://ibb.co/wzsG2W9"><img src="https://i.ibb.co/nLCdKcH/resultfinal.png" alt="resultfinal" border="0"></a>
 
+# My Approach
 There were multiple instances, where I had to make choice, <br>
 The following are some of them. <br>
 Cheers 🍷
 
-**1 Requests to endpoint**<br>
-My first thought was to request blocks one by one.<br>
-But, in search of an optimized solution, I found **Batch requests**, which decrease the load on network traffic by doing requests in the batch.<br>
-So here, 10000 blocks are requested in batches of 100<br>
-There is a problem with this approach though, as batch.execute() doesn't return promise or has a callback, you can't tell when the batch is done executing.<br>
+**Requests to endpoint**<br>
+My first thought was to request blocks one by one.But, in search of an optimized solution, I found **Batch requests**, which decrease the load on network traffic by doing requests in the batch.So here, 10000 blocks are requested in batches of 100.There is a problem with this approach though, as batch.execute() doesn't return promise or has a callback, you can't tell when the batch is done executing.<br>
 Performance ⬆️  <br>
-Reliability ⬇️<br>
-[ Solved using  <br>
- "**retry(blockNumber, web3)**" in controllers/ dbcontroller.js<br>
-Aim : For the requests failed in batch<br>
-Desc: Some requests may get ECONNRESET, depending on our call frequency and connection<br>
+Reliability ⬇️ <br>
+[ Solved using "**retry(blockNumber, web3)**" in controllers/ dbcontroller.js<br>
+**Aim : For the requests failed in batch**<br>
+**Desc:** Some requests may get ECONNRESET, depending on our call frequency and connection<br>
 For them, we are doing one by one (sync), by putting a good amount of time between each API call.]<br>
 
 **2 Programming Model (Async/Sync)**<br>
 Given requests are independent of each other, the async model is the best choice.<br>
 Performance ⬆️  <br>
 Reliability ⬇️<br>
-[ Solved using same<br>
- "**retry(blockNumber, web3)**]<br>
+[ **delayedExecute** in controllers/ dbcontroller.js <br>
+**Aim: To distribute the instantaneous load on the database**<br>
+**Desc:** delayedExecute is nothing but a wrapper around batch.execute() 
+Consider we use batch.execute() directly, by batch we have decreased load on the endpoint, but when we execute them in this way, the database calls in the batch update falls heavily on DB, resulting in load on memory and DB.To solve this what I did is, I added delay to each execution and increased it sequentially.<br>
+Ex. For the first batch : 0 sec, Second: 12 sec, Third: 24 sec.<br>
+At 0 all counters start, the first batch tx start indexing<br>
+After 12-sec Second batch tx start indexing<br>
+**Please don't think that all tx of one batch must get indexed in their 12 sec period only, it may go to the next window, most time it does as load increase.<br>
+We are not ensuring that here, all we want is the distribution of load on period.**]
  
 **3 Database Schema**<br>
 My first thought was to keep the user as key and all the tx details as value.<br>
@@ -62,6 +69,10 @@ Config :  MongoDB URI credentials<br>
 Models: Database Models<br>
 Routes: API routes<br>
 
-## Ping me on abhivispute33@gmail.com , if any there is any problem, Thanks !<br>
 
-## Result : ScreenShots / Video<br>
+
+## Result <br>
+## Blocks Received : 10000 | Successful Updates : 48690 | Expected Updates : 48690 | Total Tx : 16230 | From 21598219 to 21588220
+<a href="https://ibb.co/wzsG2W9"><img src="https://i.ibb.co/nLCdKcH/resultfinal.png" alt="resultfinal" border="0"></a>
+### Complete Collections are available under fetched data folder
+### Ping me on abhivispute33@gmail.com , if any there is any problem, Thanks !<br>
