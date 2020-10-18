@@ -15,7 +15,7 @@ There were multiple instances, where I had to make choice, <br>
 The following are some of them. <br>
 Cheers 🍷
 
-**Requests to endpoint**<br>
+## Requests to endpoint
 My first thought was to request blocks one by one.But, in search of an optimized solution, I found **Batch requests**, which decrease the load on network traffic by doing requests in the batch. So here, 10000 blocks are requested in batches of 100. There is a problem with this approach though, as batch.execute() doesn't return promise or has a callback, you can't tell when the batch is done executing.<br>
 Performance ⬆️  <br>
 Reliability ⬇️ <br>
@@ -25,7 +25,7 @@ Reliability issue solved using "**retry(blockNumber, web3)**" in controllers/ db
 **Desc:** Some requests may get ECONNRESET, depending on our call frequency and connection<br>
 For them, we are doing one by one (sync), by putting a good amount of time between each API call.<br>
 
-**2 Programming Model (Async/Sync)**<br>
+## Programming Model (Async/Sync)
 Given requests are independent of each other, the async model is the best choice.<br>
 Performance ⬆️  <br>
 Reliability ⬇️<br>
@@ -33,14 +33,15 @@ Reliability ⬇️<br>
 Reliability issue solved using **delayedExecute** in controllers/ dbcontroller.js <br>
 **Aim: To distribute the instantaneous load on the database**<br>
 **Desc:** delayedExecute is nothing but a wrapper around batch.execute() 
-Consider we use batch.execute() directly, by batch we have decreased load on the endpoint, but when we execute them in this way, the database calls in the batch update falls heavily on DB, resulting in load on memory and DB.To solve this what I did is, I added delay to each execution and increased it sequentially.<br>
+Consider we use batch.execute() directly, by batch we have decreased load on the endpoint, but when we get response from endpoint, the database calls in the batch update falls heavily on DB, resulting in load on memory and DB. To solve this what I did is, I added delay to each execution and increased it sequentially.<br>
 Ex. For the first batch : 0 sec, Second: 12 sec, Third: 24 sec.<br>
-At 0 all counters start, the first batch tx start indexing<br>
+At 0 all counters start, the first batch tx start indexing<br>z
 After 12-sec Second batch tx start indexing<br>
 **Please don't assume that all tx of one batch must get indexed in their 12 sec period only, it may go to the next window, most time it does as load increases.<br>
-We are not ensuring that here, all we want is the distribution of load on period.**
- 
-**3 Database Schema**<br>
+We are not ensuring that here, all we want is the distribution of load on period.** <br>
+**Please go through [Demo](https://www.youtube.com/watch?v=CBIjbbXmeSk&feature=youtu.be) for better view** 
+
+## Database Schema
 My first thought was to keep the user as key and all the tx details as value.<br>
 But then I realized that I am repeating tx details for both the "From" and "To" account.<br>
 So I was storing a lot of reductant data.<br>
@@ -49,23 +50,23 @@ One for User -> Tx Hash <br>
 One for TxHash -> Details <br>
 Efficiency ⬆️  <br>
 
-**4 API Load balancing**<br>
+## API Load balancing 
 At first, I was requesting from only one endpoint, then I created 3 for better performance<br>
 Performance ⬆️  <br>
 
-##  Instructions
+# Instructions
 
  1. Clone the Repo and npm install
  2. Copy paste secret.json sent over mail into the config folder (If not received ping me on abhivispute33@gmail.com)
  3. npm start
  
- ### API Calls
+ ## API Calls
  1. To Index 10k blocks from latest block : **localhost:3000/api/genesis**
  2. To get tx of user : **localhost:3000/api/getdetails/:address** 
  3. To get all transactions : **localhost:3000/api/getalltx**
  4. To get All users : **localhost:3000/api/getallusers**
 
-## Repo Structure
+# Repo Structure
 Controllers: You will find most of the business logic here only<br>
 Config :  MongoDB URI credentials<br>
 Models: Database Models<br>
