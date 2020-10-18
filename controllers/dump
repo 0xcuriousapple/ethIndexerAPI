@@ -1,0 +1,22 @@
+  // retry.forEach(function (blockNumber) {
+
+        //     setTimeout(() => {
+        //         console.log(`Requesting block ${blockNumber}`)
+
+        //         web3.eth.getBlock(blockNumber, function (err, block) {
+        //             if (err) {
+        //                 console.log(`Repeat Error for ${blockNumber}`)
+        //                 retry.push(blockNumber);
+        //                 //may lead to to infinite loop, better condition is needed, we will see it later, for now, lets assume user notice this from console statement
+        //             }
+
+        //             if (res) {
+        //                 console.log(` block ${blockNumber} received`)
+        //                 res.transactions.forEach(update);
+        //                 count++;
+        //             }
+
+
+        //         })
+        //     }, 2000);
+        // })
