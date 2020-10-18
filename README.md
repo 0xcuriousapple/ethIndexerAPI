@@ -32,10 +32,10 @@ Reliability ⬇️<br>
 
 Reliability issue solved using **delayedExecute** in controllers/ dbcontroller.js <br>
 **Aim: To distribute the instantaneous load on the database**<br>
-**Desc:** delayedExecute is nothing but a wrapper around batch.execute() 
-Consider we use batch.execute() directly, by batch we have decreased load on the endpoint, but when we get response from endpoint, the database calls in the batch update falls heavily on DB, resulting in load on memory and DB. To solve this what I did is, I added delay to each execution and increased it sequentially.<br>
+**Desc:** delayedExecute is nothing but a wrapper around batch.execute(). Consider we use batch.execute() directly, once endpoint responds, the Async Update calls falls heavily on DB, resulting in load on memory and DB. Due to this load we may miss the update, resulting in inconsistent data.<br>
+To solve this what I did is, I added delay to each execution and increased it sequentially.<br>
 Ex. For the first batch : 0 sec, Second: 12 sec, Third: 24 sec.<br>
-At 0 all counters start, the first batch tx start indexing<br>z
+At 0 all counters start, the first batch tx start indexing<br>
 After 12-sec Second batch tx start indexing<br>
 **Please don't assume that all tx of one batch must get indexed in their 12 sec period only, it may go to the next window, most time it does as load increases.<br>
 We are not ensuring that here, all we want is the distribution of load on period.** <br>
