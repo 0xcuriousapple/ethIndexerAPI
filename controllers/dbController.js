@@ -41,7 +41,7 @@ async function retry(blockNumber, web3) {
 
 async function update(item) {
 
-    console.log(`Update Called for Tx ${item.hash} Block ${item.blockNumber}`);
+    //console.log(`Update Called for Tx ${item.hash} Block ${item.blockNumber}`);
     let x = 0;
 
     // Ideally this increment should be in callback of db call, but as you can see I had it there, but there is slight provlem with mongoose, it doesnt return on creation call so we have to do it here
@@ -50,7 +50,7 @@ async function update(item) {
     usertoTx.findOneAndUpdate({ address: item.from }, { $push: { tx: item.hash } }, { upsert: true }, function (err, res) {
         if (res) {
             // ucount++;
-            console.log(`update from for tx ${item.hash}`)
+            //console.log(`update from for tx ${item.hash}`)
             // console.log(`Entry for user ${item.from} updated`)
         }
         // else {
@@ -62,7 +62,7 @@ async function update(item) {
     usertoTx.findOneAndUpdate({ address: item.to }, { $push: { tx: item.hash } }, { upsert: true }, function (err, res) {
         if (res) {
             // ucount++;
-            console.log(`update to for tx ${item.hash}`)
+            //console.log(`update to for tx ${item.hash}`)
             //console.log(`Entry for user ${item.from} updated`)
         }
         // else {
@@ -80,7 +80,7 @@ async function update(item) {
         }, function (error, result) {
             if (result) {
                 ucount++;
-                console.log(`create tx ${item.hash}`)
+                //console.log(`create tx ${item.hash}`)
             }
         }
     )
@@ -187,13 +187,13 @@ module.exports = {
         // Get Latest Block Number
         const latest = await web3Arr[0].eth.getBlockNumber()
 
-        // Doing 10000 req in Batch of 100
+        // Doing 10000 req in Batch of 10
 
         let batch = new web3Arr[0].eth.BatchRequest()
         let j = 0;
 
         let k = 0;
-        for (var i = latest; i > latest - 5; i--) {
+        for (var i = latest; i > latest - 1; i--) {
             //console.log(`request for blockno ${i} made, ${i - latest + 9999} remaining`)
             // console.log(k);
 
