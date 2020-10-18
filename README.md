@@ -37,7 +37,7 @@ To solve this what I did is, I added delay to each execution and increased it se
 Ex. For the first batch : 0 sec, Second: 12 sec, Third: 24 sec.<br>
 At 0 all counters start, the first batch tx start indexing<br>
 After 12-sec Second batch tx start indexing<br>
-**Please don't assume that all tx of one batch must get indexed in their 12 sec period only, it may go to the next window, most time it does as load increases.<br>
+**Please don't assume that all tx of one batch must get indexed in 12 sec period only, it may go to the next window, most time it does as load increases.<br>
 We are not ensuring that here, all we want is the distribution of load on period.** <br>
 **Please go through [Demo](https://www.youtube.com/watch?v=CBIjbbXmeSk&feature=youtu.be) for better view** 
 
