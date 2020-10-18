@@ -46,7 +46,7 @@ Performance ⬆️  <br>
 
 ##  Instructions
 
- 1. Copy paste secret.json sent over mail into the config folder (If not received ping me on abhivisput33@gmail.com)<br>
+ 1. Copy paste secret.json sent over mail into the config folder (If not received ping me on abhivispute33@gmail.com)<br>
  2. npm start<br>
  
  ### API Calls
@@ -61,6 +61,6 @@ Config :  MongoDB URI credentials<br>
 Models: Database Models<br>
 Routes: API routes<br>
 
-## Ping me on abhivisput33@gmail.com , if any there is any problem.<br>
+## Ping me on abhivispute33@gmail.com , if any there is any problem, Thanks !<br>
 
 ## Result : ScreenShots / Video<br>
