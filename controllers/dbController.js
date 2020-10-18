@@ -247,7 +247,7 @@ module.exports = {
                 // extremly close matter of 200, but Sucessful was behind Expected from 20000 count only
                 // so, upping it with with 12000.
                 // and we chieved perfect result
-                //Blocks Received : 10000 | Successful Updates : 48255 | Apprx. Expected Updates : 48255 | Total Tx : 16085 | From 21597550 to 21587551
+                // Blocks Received : 10000 | Successful Updates : 48690 | Expected Updates : 48690 | Total Tx : 16230 | From 21598219 to 21588220
                 delayedExecute(batch, 12000 * k);
 
                 batch = new web3Arr[k % 3].eth.BatchRequest()
@@ -262,8 +262,8 @@ module.exports = {
 
         //for console updates
         setInterval(() => {
-            console.log(`Blocks Received : ${count} | Successful Updates : ${ucount} | Apprx. Expected Updates : ${ecount} | Total Tx : ${ecount / 3} | From ${latest} to ${latest - 9999}`)
-        }, 10000);
+            console.log(`Blocks Received : ${count} | Successful Updates : ${ucount} | Expected Updates : ${ecount} | Total Tx : ${ecount / 3} | From ${latest} to ${latest - 9999}`)
+        }, 12000);
 
         res.json({ 'Please Check Console': 'Thanks !' })
     }
