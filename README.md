@@ -20,7 +20,7 @@ My first thought was to request blocks one by one.But, in search of an optimized
 Performance ⬆️  <br>
 Reliability ⬇️ <br>
 
-Solved using "**retry(blockNumber, web3)**" in controllers/ dbcontroller.js<br>
+Reliability issue solved using "**retry(blockNumber, web3)**" in controllers/ dbcontroller.js<br>
 **Aim : For the requests failed in batch**<br>
 **Desc:** Some requests may get ECONNRESET, depending on our call frequency and connection<br>
 For them, we are doing one by one (sync), by putting a good amount of time between each API call.<br>
@@ -29,14 +29,15 @@ For them, we are doing one by one (sync), by putting a good amount of time betwe
 Given requests are independent of each other, the async model is the best choice.<br>
 Performance ⬆️  <br>
 Reliability ⬇️<br>
-**delayedExecute** in controllers/ dbcontroller.js <br>
+
+Reliability issue solved using **delayedExecute** in controllers/ dbcontroller.js <br>
 **Aim: To distribute the instantaneous load on the database**<br>
 **Desc:** delayedExecute is nothing but a wrapper around batch.execute() 
 Consider we use batch.execute() directly, by batch we have decreased load on the endpoint, but when we execute them in this way, the database calls in the batch update falls heavily on DB, resulting in load on memory and DB.To solve this what I did is, I added delay to each execution and increased it sequentially.<br>
 Ex. For the first batch : 0 sec, Second: 12 sec, Third: 24 sec.<br>
 At 0 all counters start, the first batch tx start indexing<br>
 After 12-sec Second batch tx start indexing<br>
-**Please don't think that all tx of one batch must get indexed in their 12 sec period only, it may go to the next window, most time it does as load increase.<br>
+**Please don't assume that all tx of one batch must get indexed in their 12 sec period only, it may go to the next window, most time it does as load increases.<br>
 We are not ensuring that here, all we want is the distribution of load on period.**
  
 **3 Database Schema**<br>
