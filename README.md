@@ -2,7 +2,7 @@
 
 Hey Hi! <br>
 Abhishek here<br>
-This is submission to [challenge](https://www.notion.so/Backend-Engineer-c3bc14e4fad04b40a486d5cbdad83093) proposed by you, the Matic team! <br>
+This is submission to [challenge](https://www.notion.so/Backend-Engineer-c3bc14e4fad04b40a486d5cbdad83093) proposed by the Matic team! <br>
 Basically, I had to index Kovan net for the latest 10k blocks and store that in the database and expose that DB by API.
 
 ### [Demo](https://www.youtube.com/watch?v=CBIjbbXmeSk&feature=youtu.be)
@@ -11,9 +11,6 @@ Basically, I had to index Kovan net for the latest 10k blocks and store that in 
 <a href="https://ibb.co/wzsG2W9"><img src="https://i.ibb.co/nLCdKcH/resultfinal.png" alt="resultfinal" border="0"></a>
 
 # My Approach
-There were multiple instances, where I had to make choice, <br>
-The following are some of them. <br>
-Cheers 🍷
 
 ## Requests to endpoint
 My first thought was to request blocks one by one.But, in search of an optimized solution, I found **Batch requests**, which decrease the load on network traffic by doing requests in the batch. So here, 10000 blocks are requested in batches of 100. There is a problem with this approach though, as batch.execute() doesn't return promise or has a callback, you can't tell when the batch is done executing.<br>
